@@ -1323,7 +1323,7 @@ namespace TSOdecrypt
                             {
                                 if (mat_index_entries.Count > 1)
                                 {
-                                    for (int j = 1; (mat_index_entries[j - 1] == mat_index_entries[j]); j++)
+                                    for (int j = 1; (j < mat_index_entries.Count && mat_index_entries[j - 1] == mat_index_entries[j]); j++)
                                     {
                                         faces_upper_bound = j;
                                     }
