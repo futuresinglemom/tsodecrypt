@@ -7,7 +7,7 @@ TSODecrypt con algunas correcciones:
 * Agregadas multiples validaciones que hacia que se falle en muchos casos (mas que nada cuando se queria generar un TSO)
 
 Compiled exe file:
-http://www.mediafire.com/?polje6qq3ut6s1y
+http://www.mediafire.com/download/br7r3m2dwav44ao/TSODecrypt.zip
 
 DISCLAIMER: This software is maintained with the best intention, but I'am not responsible for any damage caused by this software.
 If you dont want to use this executable version you can download the source and build it using Visual C# 2010 Express
