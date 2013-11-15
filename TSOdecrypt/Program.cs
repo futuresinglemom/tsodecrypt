@@ -342,6 +342,8 @@ namespace TSOdecrypt
 
         public int encrypt_TSO(string source_path)
         {
+            System.Console.Out.WriteLine("Genrating TSO from selected directory...");
+
             int ret = 0;
             use_mesh_binary = false;
             string[] allfiles = get_all_files_from_source_path(source_path);
@@ -459,6 +461,8 @@ namespace TSOdecrypt
 
             string file_name = source_path + ".tso";
             write_scene_to_file(file_name, ref tso_scene);
+            System.Console.Out.WriteLine("DONE!");
+
             return ret;
         }
 
@@ -2462,6 +2466,7 @@ namespace TSOdecrypt
     class Decrypter
     {
         System.IO.BinaryReader reader;
+        private Boolean parsed_meshes = false;
 
         public byte[] mesh_binary_data;
 
@@ -3371,28 +3376,37 @@ namespace TSOdecrypt
 
             mesh_binary_data = read_binary_mesh_data(reader);
             UInt32 mesh_count = System.BitConverter.ToUInt32(reader.ReadBytes(4), 0);
-            scene_obj.meshes = new mesh[0];
-/*            for (int i = 0; i < mesh_count; )
+            scene_obj.meshes = new mesh[mesh_count];
+
+            try
             {
-                mesh[] meshes = read_mesh(ref reader);
-                if (meshes.Length > 1)
+                for (int i = 0; i < mesh_count; )
                 {
-                    //sub meshes make the current mesh array be too short, so it must be adjusted...
-                    mesh[] temp_mesh_holder = new mesh[scene_obj.meshes.Length + meshes.Length - 1];
-                    for (int j = 0; j < scene_obj.meshes.Length; j++)
+                    mesh[] meshes = read_mesh(ref reader);
+                    if (meshes.Length > 1)
                     {
-                        temp_mesh_holder[j] = scene_obj.meshes[j];
+                        //sub meshes make the current mesh array be too short, so it must be adjusted...
+                        mesh[] temp_mesh_holder = new mesh[scene_obj.meshes.Length + meshes.Length - 1];
+                        for (int j = 0; j < scene_obj.meshes.Length; j++)
+                        {
+                            temp_mesh_holder[j] = scene_obj.meshes[j];
+                        }
+                        scene_obj.meshes = temp_mesh_holder;
+                        mesh_count += (UInt32)(meshes.Length - 1);
                     }
-                    scene_obj.meshes = temp_mesh_holder;
-                    mesh_count += (UInt32)(meshes.Length - 1);
-                }
-                for (int j = 0; j < meshes.Length; j++)
-                {
-                    scene_obj.meshes[i] = meshes[j];
-                    i++;
+                    for (int j = 0; j < meshes.Length; j++)
+                    {
+                        scene_obj.meshes[i] = meshes[j];
+                        i++;
+                    }
                 }
             }
-            */
+            catch (Exception)
+            {
+                scene_obj.meshes = new mesh[0];
+                System.Console.Out.WriteLine("WARNING: Could not parse mesh data from TSO");
+            }
+
             write_out_data(scene_obj, dest_path);
             reader.Close();
 
@@ -3500,6 +3514,7 @@ namespace TSOdecrypt
                     sub_file_writer.Close();
                 }
             }
+
             //write x-file
             string file_name_x = dest_path;
             string[] file_name_x_parts = dest_path.Split(new string[] { "\\" }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -3515,8 +3530,13 @@ namespace TSOdecrypt
             {
                 System.Console.Out.WriteLine(ex.ToString());
             }
-            //write tso_mesh binary
             file_writer_x.Close();
+
+            if (!this.parsed_meshes)
+            {
+                System.Console.Out.WriteLine("WARNING: Could not write mesh data on X file since meshes are unparsed from TSO (So the geometry of the mod cannot be edited using 3DSMAX)");
+            }
+            //write tso_mesh binary
             string file_name_bin = dest_path;
             string[] file_name_bin_parts = dest_path.Split(new string[] { "\\" }, System.StringSplitOptions.RemoveEmptyEntries);
             file_name_bin += "\\" + file_name_bin_parts[file_name_bin_parts.Length - 1];
