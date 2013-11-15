@@ -3371,8 +3371,8 @@ namespace TSOdecrypt
 
             mesh_binary_data = read_binary_mesh_data(reader);
             UInt32 mesh_count = System.BitConverter.ToUInt32(reader.ReadBytes(4), 0);
-            scene_obj.meshes = new mesh[mesh_count];
-            for (int i = 0; i < mesh_count; )
+            scene_obj.meshes = new mesh[0];
+/*            for (int i = 0; i < mesh_count; )
             {
                 mesh[] meshes = read_mesh(ref reader);
                 if (meshes.Length > 1)
@@ -3392,7 +3392,7 @@ namespace TSOdecrypt
                     i++;
                 }
             }
-
+            */
             write_out_data(scene_obj, dest_path);
             reader.Close();
 
@@ -3545,7 +3545,8 @@ namespace TSOdecrypt
             act_mesh.transform_matrix = new Single[16];
             for (int i = 0; i < 16; i++)
             {
-                act_mesh.transform_matrix[i] = System.BitConverter.ToSingle(reader.ReadBytes(4), 0);
+                var x = reader.ReadBytes(4);
+                act_mesh.transform_matrix[i] = System.BitConverter.ToSingle(x, 0);
             }
             act_mesh.unknown1 = System.BitConverter.ToUInt32(reader.ReadBytes(4), 0);
             act_mesh.sub_mesh_count = System.BitConverter.ToUInt32(reader.ReadBytes(4), 0);
@@ -3990,9 +3991,18 @@ namespace TSOdecrypt
         {
             string ret_string = "";
             byte[] read_byte = new byte[1];
-            while ((read_byte[0] = reader.ReadByte()) != 0x00)
+            //while ((read_byte[0] = reader.ReadByte()) != 0x00)
+
+            try
             {
-                ret_string += System.Text.Encoding.ASCII.GetString(read_byte);
+                while (true)
+                {
+                    read_byte[0] = reader.ReadByte();
+                    if (read_byte[0] == 0x00) break;
+
+                    ret_string += System.Text.Encoding.ASCII.GetString(read_byte);
+                }
+            } catch (Exception e) {
             }
             if ((ret_string.CompareTo("") == 0) && !override_reader_reset)
             {
