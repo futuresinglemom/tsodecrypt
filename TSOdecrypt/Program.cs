@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
+
 namespace TSOdecrypt
 {
     class Program
     {
+        static public bool show_warnings = false;
         static void Main(string[] args)
         {
             while (true)
@@ -54,6 +56,12 @@ namespace TSOdecrypt
                         }
                     }
                 }
+            }
+
+            if (TSOdecrypt.Program.show_warnings)
+            {
+                System.Console.Out.WriteLine("Press any key to continue");
+                Console.ReadKey(false);
             }
         }
         static int decrypt_TSO(string source_file)
@@ -1010,6 +1018,7 @@ namespace TSOdecrypt
                             {
                                 //this is not an original bone... its a useless Polytrans bone
                                 System.Console.WriteLine("Warning: Discarding useless Polytrans bone: " + boneName + ".");
+                                TSOdecrypt.Program.show_warnings = true;
                             }
                             else
                             {
@@ -1055,6 +1064,7 @@ namespace TSOdecrypt
                                     else if (o == flat_root.Length - 1)
                                     {
                                         System.Console.Out.WriteLine("Warning: bone not found in skeleton, wrong skinning possible.");
+                                        TSOdecrypt.Program.show_warnings = true;
                                     }
                                 }
 
@@ -3160,6 +3170,7 @@ namespace TSOdecrypt
                         if (offset < bone_LUT_index)
                         {
                             System.Console.Out.WriteLine("Warning: Invalid skinning information. DirectX Mesh skin might be incomplete.");
+                            TSOdecrypt.Program.show_warnings = true;
                         }
                         else
                         {
@@ -3230,6 +3241,7 @@ namespace TSOdecrypt
                             else
                             {
                                 System.Console.Out.WriteLine("Warning: There is useless skinning data. Discarding useless data to avoid any problems.");
+                                TSOdecrypt.Program.show_warnings = true;
                             }
                         }
                     }
@@ -3405,6 +3417,7 @@ namespace TSOdecrypt
             {
                 scene_obj.meshes = new mesh[0];
                 System.Console.Out.WriteLine("WARNING: Could not parse mesh data from TSO");
+                TSOdecrypt.Program.show_warnings = true;
             }
 
             write_out_data(scene_obj, dest_path);
@@ -3510,6 +3523,7 @@ namespace TSOdecrypt
                     catch (Exception)
                     {
                         System.Console.Out.WriteLine(String.Format("Warning: Could not write file: {0}. File skipped proceeding extraction now.", sub_file_name));
+                        TSOdecrypt.Program.show_warnings = true;
                     }
                     sub_file_writer.Close();
                 }
@@ -3535,6 +3549,7 @@ namespace TSOdecrypt
             if (!this.parsed_meshes)
             {
                 System.Console.Out.WriteLine("WARNING: Could not write mesh data on X file since meshes are unparsed from TSO (So the geometry of the mod cannot be edited using 3DSMAX)");
+                TSOdecrypt.Program.show_warnings = true;
             }
             //write tso_mesh binary
             string file_name_bin = dest_path;
@@ -3659,6 +3674,7 @@ namespace TSOdecrypt
             if (file_name == "")
             {
                 System.Console.Out.WriteLine("Warning: invalid texture " + file_path + ". Maybe you want remove that from output folder");
+                TSOdecrypt.Program.show_warnings = true;
                 file_name = "texture.bmp";
             }
             UInt32 width = System.BitConverter.ToUInt32(reader.ReadBytes(4), 0);
