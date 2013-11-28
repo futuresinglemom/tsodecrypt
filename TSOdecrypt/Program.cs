@@ -3655,6 +3655,12 @@ namespace TSOdecrypt
             string file_path = read_bytes_until_zero(ref reader, false);
             string file_name = read_bytes_until_zero(ref reader, false);
             file_name = file_name.Replace("\"", "");
+
+            if (file_name == "")
+            {
+                System.Console.Out.WriteLine("Warning: invalid texture " + file_path + ". Maybe you want remove that from output folder");
+                file_name = "texture.bmp";
+            }
             UInt32 width = System.BitConverter.ToUInt32(reader.ReadBytes(4), 0);
             UInt32 height = System.BitConverter.ToUInt32(reader.ReadBytes(4), 0);
             UInt32 channels = System.BitConverter.ToUInt32(reader.ReadBytes(4), 0);
