@@ -66,7 +66,7 @@ namespace TSOdecrypt
         }
         static int decrypt_TSO(string source_file)
         {
-            if (source_file.Substring(source_file.Length - 3, 3).ToLower().Equals("tso"))
+            if (source_file.ToLower().EndsWith("tso"))
             {
                 string dest_path = "";
                 string[] sep = new string[1];
@@ -731,7 +731,7 @@ namespace TSOdecrypt
 
                     string[] sArray = line.Split(entryDelimiters, StringSplitOptions.RemoveEmptyEntries);
                     string name = sArray[1].Replace("_colon_", ":");
-                    if (name.Contains("_sub_") && name.Substring(name.Length - 2, 2).Equals("_0"))
+                    if (name.Contains("_sub_") && name.EndsWith("_0"))
                     {
                         name = name.Substring(0, name.Length - 2);
                     }
@@ -748,7 +748,7 @@ namespace TSOdecrypt
                         {
                             //do nothing...
                         }
-                        else if (name.Substring(name.Length - 2, 2).Equals("_0"))
+                        else if (name.EndsWith("_0"))
                         {
                             //bah Polytrans again...
                             if (tso_scene.meshes[i].name.Equals(name.Substring(0, name.Length - 2)))
@@ -1038,7 +1038,7 @@ namespace TSOdecrypt
                                 {
                                     boneName = sArray[0];
                                     //Another 3DS Max .x export fix
-                                    if (boneName.Substring(boneName.Length - 2).Equals("_0"))
+                                    if (boneName.EndsWith("_0"))
                                     {
                                         boneName = boneName.Substring(0, boneName.Length - 2);
                                     }
