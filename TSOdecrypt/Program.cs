@@ -1573,7 +1573,7 @@ namespace TSOdecrypt
                                 sArray = sub_meshes[j].Split(entryDelimiters, StringSplitOptions.RemoveEmptyEntries);
                                 sArray = sArray[0].Split(new string[] { "_sep_" }, StringSplitOptions.RemoveEmptyEntries);
                                 string sub_name = sArray[0].Replace("_colon_", ":");
-                                if (sub_name.Contains("_sub_") && sub_name.Substring(name.Length - 2, 2).Equals("_0"))
+                                if (sub_name.Contains("_sub_") && sub_name.EndsWith("_0"))
                                 {
                                     sub_name = sub_name.Substring(0, sub_name.Length - 2);
                                 }
