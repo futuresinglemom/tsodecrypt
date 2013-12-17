@@ -2826,6 +2826,29 @@ namespace TSOdecrypt
                 return x_file;
             }
 
+            private bool isAlphaNum(char car)
+            {
+                if (car > 0x40 && car < 0x5b) return true;
+                if (car > 0x60 && car < 0x7b) return true;
+                if (car > 0x47 && car < 0x58) return true;
+                return false;
+            }
+            private string escape_mesh_name(string mesh_name)
+            {
+                string ret = "";
+                for (int i = 0; i < mesh_name.Length; i++)
+                {
+                    char car=mesh_name[i];
+                    if (isAlphaNum(car) && car != 'x') {
+                        ret = ret + car;
+                    } else {
+                        // escape character
+                        ret = ret + 'x' + ((int)car).ToString();
+                    }
+                }
+                return ret;
+            }
+
             public string build_x_file_mesh()
             {
                 scene scene_obj = this;
@@ -2837,7 +2860,7 @@ namespace TSOdecrypt
                 for (int i = 0; i < meshes.Length; i++)
                 {
                     skip_indices = 0;
-                    ret_meshes += "\n\n Frame " + "NR" + i.ToString("000") + "_" + meshes[i].name + "_sep_" + "M_E_S_H" + "_sep_" + meshes[i].unknown1.ToString() + "_sep_" + meshes[i].sub_mesh_count.ToString() + "_sep_" + meshes[i].unknown3.ToString() + "_sep_" + "\n {"
+                    ret_meshes += "\n\n Frame " + "NR" + i.ToString("000") + "_" + escape_mesh_name(meshes[i].name) + "_sep_" + "M_E_S_H" + "_sep_" + meshes[i].unknown1.ToString() + "_sep_" + meshes[i].sub_mesh_count.ToString() + "_sep_" + meshes[i].unknown3.ToString() + "_sep_" + "\n {"
                                     + "\n   FrameTransformMatrix" + "\n   {" + "\n      ";
                     string mesh_transform = "";
                     for (int j = 0; j < 16; j++)
@@ -2946,7 +2969,7 @@ namespace TSOdecrypt
                         mesh_vertices[mesh_vertices.Count - 1] = mesh_vertices[mesh_vertices.Count - 1].Remove(mesh_vertices[mesh_vertices.Count - 1].Length - 1) + ";";
                     }
                     //ret_meshes += "\n   Mesh " + meshes[i].name + "\n   {" + "\n      " + meshes[i].vertex_count.ToString() + ";";
-                    ret_meshes += "\n   Mesh " + meshes[i].name + "\n   {" + "\n      " + mesh_vertices.Count.ToString() + ";";
+                    ret_meshes += "\n   Mesh " + escape_mesh_name(meshes[i].name) + "\n   {" + "\n      " + mesh_vertices.Count.ToString() + ";";
                     //List<string> mesh_vertices_orig_TSO = new List<string>();
                     /*for (int j = 0; j < meshes[i].vertex_count; j++)
                     {
@@ -3151,7 +3174,7 @@ namespace TSOdecrypt
                         //now the materials need to be defined...
                         for (int j = 0; j < meshes[i].sub_mesh_count; j++)
                         {
-                            ret_meshes += "        Material " + "NR" + i.ToString("000") + "_" + meshes[i + j].name + "_sep_" + "M_A_T" + "_sep_" + meshes[i + j].unknown1.ToString() + "_sep_" + meshes[i + j].sub_mesh_count.ToString() + "_sep_" + meshes[i + j].unknown3.ToString() + "_sep_" + " {\n          0.400000;0.400000;0.400000;1.000000;;\n          32.000000;\n          0.700000;0.700000;0.700000;;\n          0.000000;0.000000;0.000000;;\n        }\n\n";
+                            ret_meshes += "        Material " + "NR" + i.ToString("000") + "_" + escape_mesh_name(meshes[i + j].name) + "_sep_" + "M_A_T" + "_sep_" + meshes[i + j].unknown1.ToString() + "_sep_" + meshes[i + j].sub_mesh_count.ToString() + "_sep_" + meshes[i + j].unknown3.ToString() + "_sep_" + " {\n          0.400000;0.400000;0.400000;1.000000;;\n          32.000000;\n          0.700000;0.700000;0.700000;;\n          0.000000;0.000000;0.000000;;\n        }\n\n";
                         }
                         ret_meshes += "      }";
                         skip_indices = true_submesh_cnt;
