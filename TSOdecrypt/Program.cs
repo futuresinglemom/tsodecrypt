@@ -3598,7 +3598,7 @@ namespace TSOdecrypt
             mesh[] read_mesh;
             mesh act_mesh = new mesh();
 
-            act_mesh.name = read_bytes_until_zero(ref reader, false);
+            act_mesh.name = read_chars_until_zero(ref reader, false);
             act_mesh.name = act_mesh.name.Replace(":", "_colon_"); //should be compatible with directx naming conventions 
             act_mesh.transform_matrix = new Single[16];
             for (int i = 0; i < 16; i++)
@@ -4068,6 +4068,43 @@ namespace TSOdecrypt
                     ret_string += System.Text.Encoding.ASCII.GetString(read_byte);
                 }
             } catch (Exception e) {
+            }
+            if ((ret_string.CompareTo("") == 0) && !override_reader_reset)
+            {
+                reader.BaseStream.Position -= 1;
+            }
+            return ret_string;
+        }
+
+        private bool isAlphaNum(char car)
+        {
+            if (car > 0x40 && car < 0x5b) return true;
+            if (car > 0x60 && car < 0x7b) return true;
+            if (car > 0x47 && car < 0x58) return true;
+            return false;
+        }
+
+        public string read_chars_until_zero(ref System.IO.BinaryReader reader, bool override_reader_reset)
+        {
+            string ret_string = "";
+            byte[] read_byte = new byte[1];
+            try
+            {
+                while (true)
+                {
+                    read_byte[0] = reader.ReadByte();
+                    if (read_byte[0] == 0x00) break;
+
+                    string ascii_string = System.Text.Encoding.ASCII.GetString(read_byte);
+                    if (!isAlphaNum(ascii_string[0]) || ascii_string == "?" || ascii_string == "x")
+                    {
+                        ascii_string = "x" + read_byte[0].ToString();
+                    }
+                    ret_string += ascii_string;
+                }
+            }
+            catch (Exception e)
+            {
             }
             if ((ret_string.CompareTo("") == 0) && !override_reader_reset)
             {
